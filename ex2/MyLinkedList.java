@@ -27,11 +27,7 @@ public class MyLinkedList<E> {
     }
 
     public void remove(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
-
-        Node currentNode = getNode(index);
+        Node currentNode = getCurrentNode(index);
 
         if (currentNode.prev != null) {
             currentNode.prev.next = currentNode.next;
@@ -59,12 +55,17 @@ public class MyLinkedList<E> {
     }
 
     public E get(int index) {
+        Node currentNode = getCurrentNode(index);
+        return currentNode.value;
+    }
+
+    private Node getCurrentNode(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
 
         Node currentNode = getNode(index);
-        return currentNode.value;
+        return currentNode;
     }
 
     private Node getNode(int index) {
