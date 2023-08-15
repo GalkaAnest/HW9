@@ -1,57 +1,60 @@
 package hw9.ex1;
+
 import java.util.Arrays;
 
 //import static com.sun.tools.javac.util.ArrayUtils.ensureCapacity;
 
 
 public class MyArrayList<E> {
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 2000000;
     private Object[] elements;
     private int size;
 
-    public MyArrayList(){
+    public MyArrayList() {
         elements = new Object[DEFAULT_CAPACITY];
         size = 0;
     }
 
-    public void add(E value){
-        ensureCapacity(size +1);
+    public void add(E value) {
+        ensureCapacity(size + 1);
         elements[size++] = value;
 
     }
 
     private void ensureCapacity(int minCapacity) {
-        if (minCapacity > elements.length){
-            int newCapacity = elements.length + (elements.length>>1);
+        if (minCapacity > elements.length) {
+            int newCapacity = elements.length + (elements.length >> 1);
             elements = Arrays.copyOf(elements, newCapacity);
         }
     }
 
-    public void remove(int index){
-        if(index <0 || index >= size){
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: "+ size);
-        }
+    public void remove(int index) {
+        checkIndex(index);
         int numMoved = size - index - 1;
-        if(numMoved > 0){
-            System.arraycopy(elements,index+1, elements, index, numMoved);
+        if (numMoved > 0) {
+            System.arraycopy(elements, index + 1, elements, index, numMoved);
         }
-        elements [--size] = null;
+        elements[--size] = null;
     }
 
-    public void clear(){
-        Arrays.fill(elements, 0,size,null);
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+    }
+
+    public void clear() {
+        Arrays.fill(elements, 0, size, null);
         size = 0;
     }
 
 
-    public int size(){
+    public int size() {
         return size;
     }
 
-    public E get(int index){
-        if (index<0 || index>=size){
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
+    public E get(int index) {
+        checkIndex(index);
         return (E) elements[index];
     }
 
@@ -82,4 +85,4 @@ public class MyArrayList<E> {
     }
 }
 
-    //private Object[] myArray = new ArrayList[];
+//private Object[] myArray = new ArrayList[];
