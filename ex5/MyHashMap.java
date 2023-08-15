@@ -1,146 +1,132 @@
-//package hw9.ex5;
-//
-//public class MyHashMap<K, V> {
-//    private static final int DEFAULT_CAPACITY = 16;
-//    private Node<K, V>[] buckets;
-//    private int size;
-//
-//
-//    public MyHashMap() {
-//        this(DEFAULT_CAPACITY);
-//    }
-//
-//    public MyHashMap(int capacity) {
-//        if (capacity <= 0) {
-//            throw new IllegalArgumentException("Invalid capacity: " + capacity);
-//        }
-//        buckets = new Node[capacity];
-//        size = 0;
-//    }
-//
-//    public void put(K key, V value) {
-//        int bucketIndex = getBucketIndex(key);
-//        Node<K, V> newNode = new Node<>(key, value);
-//
-//        Node<K, V> currentNode = buckets[bucketIndex];
-//        if (currentNode == null) {
-//            buckets[bucketIndex] = newNode;
-//            size++;
-//        } else {
-//            Node<K, V> prevNode = null;
-//            while (currentNode != null) {
-//                if (currentNode.key.equals(key)) {
-//                    currentNode.value = value;
-//                    return;
-//                }
-//                prevNode = currentNode;
-//                currentNode = currentNode.next;
-//            }
-//            prevNode.next = newNode;
-//            size++;
-//        }
-//    }
-//
-//    public void remove(K key) {
-//        int bucketIndex = getBucketIndex(key);
-//        Node<K, V> currentNode = buckets[bucketIndex];
-//        Node<K, V> prevNode = null;
-//
-//        while (currentNode != null) {
-//            if (currentNode.key.equals(key)) {
-//                if (prevNode == null) {
-//                    buckets[bucketIndex] = currentNode.next;
-//                } else {
-//                    prevNode.next = currentNode.next;
-//                }
-//                size--;
-//                return;
-//            }
-//            prevNode = currentNode;
-//            currentNode = currentNode.next;
-//        }
-//    }
-//    // В хешмапі метод clear не повинен містити ніякого циклу. Достатньо створити новий масив та обнулити size
-//
-//    public <K,V> void clear() {
-//      //this.buckets = new Node<K, V> [DEFAULT_CAPACITY];
-//      this.buckets = new Node<K, V> [DEFAULT_CAPACITY];
-////        E[] arr = (E[])new Object[INITIAL_ARRAY_LENGTH];
-//      this.size = 0;
-//    }
-//
-////    public void clear() {
-////        bucketArray = new HashMapLinkedList[DEFAULT_BUCKET_QTY];
-////        createBuckets(bucketArray, bucketArray.length);
-////        size = 0;
-////    }
-//
-////    public void clear() {
-////        for (int i = 0; i < buckets.length; i++) {
-////            buckets[i] = null;
-////        }
-////        size = 0;
-////    }
-//
-//    public int size() {
-//        return size;
-//    }
-//
-//    public V get(K key) {
-//        int bucketIndex = getBucketIndex(key);
-//        Node<K, V> currentNode = buckets[bucketIndex];
-//
-//        while (currentNode != null) {
-//            if (currentNode.key.equals(key)) {
-//                return currentNode.value;
-//            }
-//            currentNode = currentNode.next;
-//        }
-//
-//        return null;
-//    }
-//
-//    private int getBucketIndex(K key) {
-//        int hashCode = key.hashCode();
-//        return Math.abs(hashCode) % buckets.length;
-//    }
-//
-//    private static class Node<K, V> {
-//        K key;
-//        V value;
-//        Node<K, V> next;
-//
-//        Node(K key, V value) {
-//            this.key = key;
-//            this.value = value;
-//            this.next = null;
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        MyHashMap<String, Integer> hashMap = new MyHashMap<>();
-//
-//        // Putting key-value pairs
-//        hashMap.put("Apple", 10);
-//        hashMap.put("Banana", 5);
-//        hashMap.put("Orange", 7);
-//
-//        // Getting size
-//        System.out.println("Size: " + hashMap.size());
-//
-//        // Getting values by keys
-//        System.out.println("Value for 'Apple': " + hashMap.get("Apple"));
-//        System.out.println("Value for 'Banana': " + hashMap.get("Banana"));
-//        System.out.println("Value for 'Orange': " + hashMap.get("Orange"));
-//
-//        // Removing a key-value pair
-//        hashMap.remove("Banana");
-//
-//        // Clearing the collection
-//        hashMap.clear();
-//
-//        // Getting size after removing and clearing
-//        System.out.println("Size: " + hashMap.size());
-//    }
-//}
-//
+package hw9.ex5;
+
+import java.util.Objects;
+
+public class MyHashMap {
+    private static final int INITIAL_CAPACITY = 16;
+    private Node[] buckets;
+    private int size;
+
+    public MyHashMap() {
+        this.buckets = new Node[INITIAL_CAPACITY];
+        this.size = 0;
+    }
+
+    public void put(Object key, Object value) {
+        int index = getIndex(key);
+        Node newNode = new Node(key, value);
+
+        if (buckets[index] == null) {
+            buckets[index] = newNode;
+        } else {
+            Node current = buckets[index];
+            while (current.next != null) {
+                if (Objects.equals(current.key, key)) {
+                    current.value = value;
+                    return;
+                }
+                current = current.next;
+            }
+            if (Objects.equals(current.key, key)) {
+                current.value = value;
+            } else {
+                current.next = newNode;
+            }
+        }
+
+        size++;
+        if (size >= buckets.length) {
+            increaseCapacity();
+        }
+    }
+
+    public void remove(Object key) {
+        int index = getIndex(key);
+        Node current = buckets[index];
+        Node prev = null;
+
+        while (current != null) {
+            if (Objects.equals(current.key, key)) {
+                if (prev == null) {
+                    buckets[index] = current.next;
+                } else {
+                    prev.next = current.next;
+                }
+                size--;
+                return;
+            }
+            prev = current;
+            current = current.next;
+        }
+    }
+
+    public void clear() {
+        buckets = new Node[INITIAL_CAPACITY];
+        size = 0;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public Object get(Object key) {
+        int index = getIndex(key);
+        Node current = buckets[index];
+
+        while (current != null) {
+            if (Objects.equals(current.key, key)) {
+                return current.value;
+            }
+            current = current.next;
+        }
+
+        return null;
+    }
+
+    private int getIndex(Object key) {
+        return Math.abs(key.hashCode()) % buckets.length;
+    }
+
+    private void increaseCapacity() {
+        Node[] newBuckets = new Node[buckets.length * 2];
+        for (Node node : buckets) {
+            while (node != null) {
+                int newIndex = Math.abs(node.key.hashCode()) % newBuckets.length;
+                Node newNode = new Node(node.key, node.value);
+                newNode.next = newBuckets[newIndex];
+                newBuckets[newIndex] = newNode;
+                node = node.next;
+            }
+        }
+        buckets = newBuckets;
+    }
+
+    private static class Node {
+        Object key;
+        Object value;
+        Node next;
+
+        Node(Object key, Object value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    public static void main(String[] args) {
+        MyHashMap map = new MyHashMap();
+
+        for (int i = 0; i < 1000000; i++) {
+            map.put("Key" + i, "Value" + i);
+        }
+
+        System.out.println("Size: " + map.size());
+
+        for (int i = 0; i < 1000000; i++) {
+            Object value = map.get("Key" + i);
+            if (!Objects.equals(value, "Value" + i)) {
+                System.out.println("Incorrect value for key Key" + i);
+                break;
+            }
+        }
+    }
+}
